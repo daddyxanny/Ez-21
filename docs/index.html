@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZ 21 - Blackjack Strategy Calculator</title>
+    <meta name="description" content="Master blackjack strategy with real-time probability calculations and optimal play recommendations for every hand.">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="EZ 21 - Blackjack Strategy Calculator">
+    <meta property="og:description" content="Get instant blackjack strategy recommendations and probability calculations to improve your game.">
+    <meta property="og:type" content="website">
+    
+    <style>
+        :root {
+            --bg-color: #0f1419;
+            --card-bg: #1a1f2e;
+            --border-color: #2d3748;
+            --primary-color: #4299e1;
+            --success-color: #48bb78;
+            --danger-color: #f56565;
+            --warning-color: #ed8936;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cards-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-slots {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .card-slot {
+            width: 60px;
+            height: 80px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: var(--bg-color);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .card-slot:hover {
+            border-color: var(--primary-color);
+            background: rgba(66, 153, 225, 0.1);
+        }
+
+        .card-slot.filled {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .card-slot .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .card-slot.filled .remove-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .probability-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .probability-item {
+            margin-bottom: 20px;
+        }
+
+        .probability-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .probability-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .recommendation {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .recommendation.hit {
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .recommendation.stand {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .recommendation.double {
+            background: rgba(237, 137, 54, 0.2);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-option {
+            padding: 15px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .card-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(66, 153, 225, 0.1);
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        .donation-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hand-counter {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">EZ 21</h1>
+            <p class="subtitle">Blackjack Strategy Calculator & Probability Analysis</p>
+        </div>
+
+        <div class="hand-counter">
+            <div class="stats">Hands Played: <span id="hands-count">0</span></div>
+        </div>
+
+        <div class="game-area">
+            <div class="cards-section">
+                <div class="section-title">
+                    <span>🎰</span> Dealer Cards
+                </div>
+                <div class="card-slots" id="dealer-slots">
+                    <div class="card-slot" data-section="dealer" data-index="0" onclick="selectSlot('dealer', 0)">
+                        <span>?</span>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <span>👤</span> Player Cards
+                </div>
+                <div class="card-slots" id="player-slots">
+                    <div class="card-slot" data-section="player" data-index="0" onclick="selectSlot('player', 0)">
+                        <span>?</span>
+                    </div>
+                    <div class="card-slot" data-section="player" data-index="1" onclick="selectSlot('player', 1)">
+                        <span>?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="probability-panel">
+                <h3 class="section-title">📊 Analysis</h3>
+                
+                <div class="probability-item">
+                    <div class="probability-label">Win Probability</div>
+                    <div class="probability-value" style="color: var(--success-color);" id="win-prob">0%</div>
+                </div>
+
+                <div class="probability-item">
+                    <div class="probability-label">Bust Probability</div>
+                    <div class="probability-value" style="color: var(--danger-color);" id="bust-prob">0%</div>
+                </div>
+
+                <div class="recommendation" id="recommendation">
+                    Select cards to get strategy recommendation
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="resetHand()">Reset Hand</button>
+            <button class="btn btn-primary" onclick="dealAgain()">Deal Again</button>
+            <button class="btn btn-success" onclick="showDonation()">Support EZ 21</button>
+        </div>
+
+        <div class="donation-section">
+            <h3>Support Development</h3>
+            <p>Help keep EZ 21 free and support continued development!</p>
+            <p>Visit our <a href="https://github.com/yourusername/ez21" target="_blank" style="color: var(--primary-color);">GitHub repository</a> to contribute or report issues.</p>
+        </div>
+    </div>
+
+    <!-- Card Selection Modal -->
+    <div class="modal" id="card-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Select Card Value</h3>
+            <div class="card-grid" id="card-grid"></div>
+            <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            dealerCards: [],
+            playerCards: [],
+            handCount: 0
+        };
+
+        let dealerSlots = [null];
+        let playerSlots = [null, null];
+        let currentSlot = null;
+
+        const CARD_VALUES = [
+            { value: 1, display: 'A' },
+            { value: 2, display: '2' },
+            { value: 3, display: '3' },
+            { value: 4, display: '4' },
+            { value: 5, display: '5' },
+            { value: 6, display: '6' },
+            { value: 7, display: '7' },
+            { value: 8, display: '8' },
+            { value: 9, display: '9' },
+            { value: 10, display: '10' },
+            { value: 10, display: 'J' },
+            { value: 10, display: 'Q' },
+            { value: 10, display: 'K' }
+        ];
+
+        // Initialize
+        function init() {
+            loadGameStats();
+            renderCards();
+            updateDisplay();
+            populateCardGrid();
+        }
+
+        function selectSlot(section, index) {
+            currentSlot = { section, index };
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        function populateCardGrid() {
+            const grid = document.getElementById('card-grid');
+            grid.innerHTML = '';
+            
+            CARD_VALUES.forEach(card => {
+                const button = document.createElement('div');
+                button.className = 'card-option';
+                button.textContent = card.display;
+                button.onclick = () => selectCardValue(card);
+                grid.appendChild(button);
+            });
+        }
+
+        function selectCardValue(card) {
+            if (!currentSlot) return;
+
+            const { section, index } = currentSlot;
+            
+            if (section === 'dealer') {
+                dealerSlots[index] = card.display;
+                gameState.dealerCards[index] = card.value;
+            } else {
+                playerSlots[index] = card.display;
+                gameState.playerCards[index] = card.value;
+            }
+
+            renderCards();
+            updateDisplay();
+            checkForAutoAddSlot();
+            closeModal();
+        }
+
+        function removeCard(section, index) {
+            if (section === 'dealer') {
+                dealerSlots[index] = null;
+                gameState.dealerCards[index] = undefined;
+                dealerSlots = dealerSlots.filter((_, i) => i !== index || dealerSlots.some((slot, j) => j > i && slot !== null));
+                gameState.dealerCards = gameState.dealerCards.filter((_, i) => i !== index || gameState.dealerCards.some((card, j) => j > i && card !== undefined));
+            } else {
+                playerSlots[index] = null;
+                gameState.playerCards[index] = undefined;
+                playerSlots = playerSlots.filter((_, i) => i !== index || playerSlots.some((slot, j) => j > i && slot !== null));
+                gameState.playerCards = gameState.playerCards.filter((_, i) => i !== index || gameState.playerCards.some((card, j) => j > i && card !== undefined));
+            }
+
+            renderCards();
+            updateDisplay();
+        }
+
+        function renderCards() {
+            // Render dealer slots
+            const dealerContainer = document.getElementById('dealer-slots');
+            dealerContainer.innerHTML = '';
+            
+            dealerSlots.forEach((card, index) => {
+                const slot = document.createElement('div');
+                slot.className = `card-slot ${card ? 'filled' : ''}`;
+                slot.setAttribute('data-section', 'dealer');
+                slot.setAttribute('data-index', index);
+                slot.onclick = () => selectSlot('dealer', index);
+                
+                if (card) {
+                    slot.innerHTML = `
+                        ${card}
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeCard('dealer', ${index})">×</button>
+                    `;
+                } else {
+                    slot.innerHTML = '<span>?</span>';
+                }
+                
+                dealerContainer.appendChild(slot);
+            });
+
+            // Render player slots
+            const playerContainer = document.getElementById('player-slots');
+            playerContainer.innerHTML = '';
+            
+            playerSlots.forEach((card, index) => {
+                const slot = document.createElement('div');
+                slot.className = `card-slot ${card ? 'filled' : ''}`;
+                slot.setAttribute('data-section', 'player');
+                slot.setAttribute('data-index', index);
+                slot.onclick = () => selectSlot('player', index);
+                
+                if (card) {
+                    slot.innerHTML = `
+                        ${card}
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeCard('player', ${index})">×</button>
+                    `;
+                } else {
+                    slot.innerHTML = '<span>?</span>';
+                }
+                
+                playerContainer.appendChild(slot);
+            });
+        }
+
+        function updateDisplay() {
+            const probabilities = calculateBlackjackProbabilities();
+            
+            document.getElementById('win-prob').textContent = probabilities.winProbability.toFixed(1) + '%';
+            document.getElementById('bust-prob').textContent = probabilities.bustProbability.toFixed(1) + '%';
+            
+            const recommendation = document.getElementById('recommendation');
+            recommendation.textContent = probabilities.recommendation;
+            recommendation.className = `recommendation ${probabilities.recommendationColor}`;
+            
+            document.getElementById('hands-count').textContent = gameState.handCount;
+        }
+
+        function checkForAutoAddSlot() {
+            // Auto-add dealer slot if needed
+            if (dealerSlots.every(slot => slot !== null) && dealerSlots.length < 6) {
+                dealerSlots.push(null);
+                renderCards();
+            }
+
+            // Auto-add player slot if needed
+            if (playerSlots.every(slot => slot !== null) && playerSlots.length < 6) {
+                playerSlots.push(null);
+                renderCards();
+            }
+        }
+
+        function resetHand() {
+            gameState.dealerCards = [];
+            gameState.playerCards = [];
+            dealerSlots = [null];
+            playerSlots = [null, null];
+            renderCards();
+            updateDisplay();
+        }
+
+        function dealAgain() {
+            resetHand();
+            gameState.handCount++;
+            updateDisplay();
+            saveGameStats();
+        }
+
+        function calculateHandValue(cards) {
+            if (!cards || cards.length === 0) return 0;
+            
+            let sum = 0;
+            let aces = 0;
+            
+            cards.forEach(card => {
+                if (card === 1) {
+                    aces++;
+                    sum += 11;
+                } else {
+                    sum += card;
+                }
+            });
+            
+            while (sum > 21 && aces > 0) {
+                sum -= 10;
+                aces--;
+            }
+            
+            return sum;
+        }
+
+        function calculatePlayerBustProbability(playerValue) {
+            if (playerValue >= 21) return playerValue > 21 ? 100 : 0;
+            
+            const cardsNeeded = 21 - playerValue;
+            const bustCards = Math.max(0, 13 - Math.min(13, cardsNeeded));
+            return (bustCards / 13) * 100;
+        }
+
+        function getBasicStrategyRecommendation(playerValue, dealerUpCard, playerCards) {
+            if (playerValue > 21) return { recommendation: 'BUST', recommendationColor: 'hit' };
+            if (playerValue === 21) return { recommendation: 'BLACKJACK', recommendationColor: 'stand' };
+            if (!dealerUpCard) return { recommendation: 'SELECT_CARDS', recommendationColor: 'double' };
+            
+            // Soft totals (with Ace as 11)
+            const hasAce = playerCards && playerCards.includes(1);
+            const softTotal = hasAce && playerValue <= 21;
+            
+            if (softTotal && playerCards.length === 2) {
+                if (playerValue >= 19) return { recommendation: 'STAND', recommendationColor: 'stand' };
+                if (playerValue === 18) {
+                    return dealerUpCard <= 6 ? { recommendation: 'STAND', recommendationColor: 'stand' } : { recommendation: 'HIT', recommendationColor: 'hit' };
+                }
+                if (playerValue >= 15) {
+                    return dealerUpCard <= 6 ? { recommendation: 'DOUBLE', recommendationColor: 'double' } : { recommendation: 'HIT', recommendationColor: 'hit' };
+                }
+            }
+            
+            // Hard totals
+            if (playerValue >= 17) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue >= 13 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue === 12 && dealerUpCard >= 4 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue === 11) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            if (playerValue === 10 && dealerUpCard <= 9) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            if (playerValue === 9 && dealerUpCard >= 3 && dealerUpCard <= 6) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            
+            return { recommendation: 'HIT', recommendationColor: 'hit' };
+        }
+
+        function calculateWinProbability(playerValue, dealerUpCard, recommendation) {
+            if (playerValue > 21) return 0;
+            if (playerValue === 21) return 85;
+            if (!dealerUpCard) return 0;
+            
+            // Simplified win probability calculation
+            let baseWinRate = 42; // Base win rate for basic strategy
+            
+            // Adjust based on player hand strength
+            if (playerValue >= 19) baseWinRate += 15;
+            else if (playerValue >= 17) baseWinRate += 5;
+            else if (playerValue <= 11) baseWinRate -= 10;
+            
+            // Adjust based on dealer upcard
+            if (dealerUpCard <= 6) baseWinRate += 8;
+            else if (dealerUpCard >= 10) baseWinRate -= 8;
+            
+            // Adjust based on recommendation
+            if (recommendation === 'STAND') baseWinRate += 5;
+            else if (recommendation === 'DOUBLE') baseWinRate += 3;
+            
+            return Math.max(0, Math.min(95, baseWinRate));
+        }
+
+        function calculateBlackjackProbabilities() {
+            const dealerCards = gameState.dealerCards.filter(card => card !== undefined);
+            const playerCards = gameState.playerCards.filter(card => card !== undefined);
+            
+            if (dealerCards.length === 0 && playerCards.length === 0) {
+                return {
+                    winProbability: 0,
+                    bustProbability: 0,
+                    recommendation: 'SELECT_CARDS',
+                    recommendationColor: 'double'
+                };
+            }
+            
+            const playerValue = calculateHandValue(playerCards);
+            const dealerUpCard = dealerCards.length > 0 ? dealerCards[0] : null;
+            const bustProbability = calculatePlayerBustProbability(playerValue);
+            const strategy = getBasicStrategyRecommendation(playerValue, dealerUpCard, playerCards);
+            const winProbability = calculateWinProbability(playerValue, dealerUpCard, strategy.recommendation);
+            
+            return {
+                winProbability,
+                bustProbability,
+                recommendation: strategy.recommendation,
+                recommendationColor: strategy.recommendationColor
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('card-modal').classList.remove('active');
+            currentSlot = null;
+        }
+
+        function showDonation() {
+            alert('Thank you for considering supporting EZ 21! Visit our GitHub repository to contribute to the project.');
+        }
+
+        function saveGameStats() {
+            localStorage.setItem('ez21-stats', JSON.stringify({
+                handCount: gameState.handCount,
+                lastPlayed: new Date().toISOString()
+            }));
+        }
+
+        function loadGameStats() {
+            const saved = localStorage.getItem('ez21-stats');
+            if (saved) {
+                const stats = JSON.parse(saved);
+                gameState.handCount = stats.handCount || 0;
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('card-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize the game
+        init();
+    </script>
+</body>
+</html>

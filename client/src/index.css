@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(210, 11%, 15%);
+  --foreground: hsl(210, 17%, 98%);
+  --muted: hsl(210, 11%, 21%);
+  --muted-foreground: hsl(210, 9%, 65%);
+  --popover: hsl(210, 11%, 15%);
+  --popover-foreground: hsl(210, 17%, 98%);
+  --card: hsl(210, 11%, 19%);
+  --card-foreground: hsl(210, 17%, 98%);
+  --border: hsl(210, 11%, 25%);
+  --input: hsl(210, 11%, 25%);
+  --primary: hsl(200, 100%, 50%);
+  --primary-foreground: hsl(210, 11%, 15%);
+  --secondary: hsl(210, 11%, 25%);
+  --secondary-foreground: hsl(210, 17%, 98%);
+  --accent: hsl(210, 11%, 25%);
+  --accent-foreground: hsl(210, 17%, 98%);
+  --destructive: hsl(0, 62%, 54%);
+  --destructive-foreground: hsl(210, 17%, 98%);
+  --ring: hsl(200, 100%, 50%);
+  --radius: 0.5rem;
+  
+  /* Custom EZ 21 variables */
+  --success-green: hsl(142, 76%, 36%);
+  --warning-orange: hsl(38, 92%, 50%);
+  --danger-red: hsl(348, 83%, 47%);
+  --electric-blue: hsl(200, 100%, 50%);
+  --cyan-accent: hsl(185, 84%, 44%);
+}
+
+.dark {
+  --background: hsl(210, 11%, 10%);
+  --foreground: hsl(210, 17%, 98%);
+  --muted: hsl(210, 11%, 15%);
+  --muted-foreground: hsl(210, 9%, 55%);
+  --popover: hsl(210, 11%, 10%);
+  --popover-foreground: hsl(210, 17%, 98%);
+  --card: hsl(210, 11%, 13%);
+  --card-foreground: hsl(210, 17%, 98%);
+  --border: hsl(210, 11%, 20%);
+  --input: hsl(210, 11%, 20%);
+  --primary: hsl(200, 100%, 50%);
+  --primary-foreground: hsl(210, 11%, 10%);
+  --secondary: hsl(210, 11%, 20%);
+  --secondary-foreground: hsl(210, 17%, 98%);
+  --accent: hsl(210, 11%, 20%);
+  --accent-foreground: hsl(210, 17%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, hsl(260, 30%, 8%) 0%, hsl(280, 40%, 12%) 30%, hsl(300, 50%, 16%) 70%, hsl(320, 60%, 20%) 100%);
+    min-height: 100vh;
+    color: white;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-black/30 backdrop-blur-2xl border border-white/10;
+  }
+  
+  .neon-text {
+    text-shadow: 0 0 15px hsl(280, 100%, 70%), 0 0 30px hsl(280, 100%, 60%), 0 0 45px hsl(320, 100%, 70%);
+    background: linear-gradient(45deg, hsl(280, 100%, 70%), hsl(320, 100%, 70%), hsl(220, 100%, 65%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .card-slot {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(15px);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card-slot::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(280, 100%, 70%, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: transform 0.6s ease;
+    opacity: 0;
+  }
+  
+  .card-slot:hover::before {
+    transform: rotate(45deg) translate(100%, 100%);
+    opacity: 1;
+  }
+  
+  .card-selected {
+    background: linear-gradient(145deg, hsl(280, 100%, 70%), hsl(320, 100%, 70%), hsl(220, 100%, 65%));
+    border: 2px solid hsl(180, 100%, 60%);
+    box-shadow: 0 0 30px rgba(224, 64, 251, 0.6), 0 0 60px rgba(224, 64, 251, 0.3);
+    animation: pulse-card 2s ease-in-out infinite;
+  }
+  
+  .probability-bar {
+    transition: width 0.8s ease-in-out;
+  }
+  
+  .modal-backdrop {
+    backdrop-filter: blur(8px);
+  }
+}
+
+@layer utilities {
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  .animate-card-flip {
+    animation: card-flip 0.6s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(224, 64, 251, 0.5); 
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(224, 64, 251, 0.8); 
+  }
+}
+
+@keyframes pulse-card {
+  0%, 100% { 
+    box-shadow: 0 0 30px rgba(224, 64, 251, 0.6), 0 0 60px rgba(224, 64, 251, 0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(224, 64, 251, 0.8), 0 0 80px rgba(224, 64, 251, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes card-flip {
+  0% { 
+    transform: rotateY(0deg); 
+  }
+  50% { 
+    transform: rotateY(90deg); 
+  }
+  100% { 
+    transform: rotateY(0deg); 
+  }
+}
+
+@keyframes slide-up {
+  0% { 
+    transform: translateY(20px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fade-in {
+  0% { 
+    opacity: 0; 
+  }
+  100% { 
+    opacity: 1; 
+  }
+}

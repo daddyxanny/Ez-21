@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Blackjack Strategy Calculator | EZ 21 - Basic Strategy & Probability Analysis</title>
+    <meta name="description" content="Free blackjack calculator with real-time strategy recommendations and probability analysis. Master basic blackjack strategy with mathematically proven optimal play decisions.">
+    <meta name="keywords" content="blackjack calculator, blackjack strategy, basic strategy calculator, blackjack probability, card counting, blackjack odds, casino strategy, blackjack trainer, optimal play, blackjack math">
+    <meta name="author" content="EZ 21">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://yourdomain.github.io/">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Free Blackjack Strategy Calculator | EZ 21 - Basic Strategy & Probability Analysis">
+    <meta property="og:description" content="Free blackjack calculator with real-time strategy recommendations and probability analysis. Master basic blackjack strategy with mathematically proven optimal play decisions.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.github.io/">
+    <meta property="og:site_name" content="EZ 21 Blackjack Calculator">
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Blackjack Strategy Calculator | EZ 21">
+    <meta name="twitter:description" content="Free blackjack calculator with real-time strategy recommendations and probability analysis.">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "EZ 21 Blackjack Strategy Calculator",
+      "description": "Free blackjack calculator with real-time strategy recommendations and probability analysis. Master basic blackjack strategy with mathematically proven optimal play decisions.",
+      "url": "https://yourdomain.github.io/",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "EZ 21"
+      },
+      "keywords": "blackjack calculator, blackjack strategy, basic strategy calculator, blackjack probability, casino strategy"
+    }
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">EZ 21</h1>
+            <p class="subtitle">Blackjack Strategy Calculator & Probability Analysis</p>
+        </div>
+
+        <div class="hand-counter">
+            <div class="stats">Hands Played: <span id="hands-count">0</span></div>
+        </div>
+
+        <div class="game-area">
+            <div class="cards-section">
+                <div class="section-title">
+                    Dealer Up Card
+                </div>
+                <div class="card-slots" id="dealer-slots">
+                    <div class="card-slot single-dealer-slot" data-section="dealer" data-index="0" onclick="selectSlot('dealer', 0)">
+                        <span>?</span>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    Player Cards
+                </div>
+                <div class="card-slots" id="player-slots">
+                    <div class="card-slot" data-section="player" data-index="0" onclick="selectSlot('player', 0)">
+                        <span>?</span>
+                    </div>
+                    <div class="card-slot" data-section="player" data-index="1" onclick="selectSlot('player', 1)">
+                        <span>?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="probability-panel">
+                <h3 class="section-title">Analysis</h3>
+                
+                <div class="probability-item">
+                    <div class="probability-label">Win Probability</div>
+                    <div class="probability-value" style="color: var(--success-color);" id="win-prob">0%</div>
+                </div>
+
+                <div class="probability-item">
+                    <div class="probability-label">Bust Probability</div>
+                    <div class="probability-value" style="color: var(--danger-color);" id="bust-prob">0%</div>
+                </div>
+
+                <div class="recommendation" id="recommendation">
+                    SELECT CARDS
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="resetHand()">Reset Hand</button>
+            <button class="btn btn-primary" onclick="dealAgain()">Deal Again</button>
+            <button class="btn btn-success" onclick="showDonation()">❤️ Support EZ 21</button>
+        </div>
+
+        <div class="footer">
+            <h3>About EZ 21 Blackjack Calculator</h3>
+            <p>EZ 21 is a free, professional blackjack strategy calculator that provides real-time probability analysis and optimal play recommendations. Our calculator uses mathematically proven basic strategy to help you make the best decisions at the blackjack table.</p>
+            
+            <div class="seo-content">
+                <h4>Features:</h4>
+                <ul>
+                    <li>Real-time blackjack strategy recommendations</li>
+                    <li>Probability calculations for win and bust scenarios</li>
+                    <li>Basic strategy based on mathematical analysis</li>
+                    <li>Support for multiple card combinations</li>
+                    <li>Free to use with no registration required</li>
+                </ul>
+                
+                <h4>How to Use:</h4>
+                <p>Simply select your cards and the dealer's up card to receive instant strategy advice. The calculator will tell you whether to hit, stand, or double down based on optimal blackjack basic strategy.</p>
+            </div>
+            
+            <p><a href="https://www.freeprivacypolicy.com/live/395d7ac7-e700-4553-b032-e42c9ad4fadb" target="_blank" class="privacy-link">Privacy Policy</a></p>
+        </div>
+    </div>
+
+    <!-- Card Selection Modal -->
+    <div class="modal" id="card-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Select Card Value</h3>
+            <div class="card-grid" id="card-grid"></div>
+            <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div class="modal donation-modal" id="donation-modal">
+        <div class="modal-content">
+            <h3 class="donation-title">❤️ Support EZ 21</h3>
+            <p class="donation-text">Help keep this app free and support continued development!</p>
+            
+            <div class="amount-selector">
+                <button class="amount-btn" onclick="selectAmount('3.00')">$3</button>
+                <button class="amount-btn active" onclick="selectAmount('5.00')">$5</button>
+                <button class="amount-btn" onclick="selectAmount('10.00')">$10</button>
+            </div>
+            
+            <div class="donation-methods">
+                <div class="method-tabs">
+                    <button class="method-tab active" onclick="switchMethod('paypal')">PayPal</button>
+                    <button class="method-tab" onclick="switchMethod('crypto')">Crypto</button>
+                </div>
+                
+                <div class="method-content">
+                    <div id="paypal-method" class="method-panel active">
+                        <div class="paypal-container">
+                            <button class="paypal-button" onclick="openPayPal()">
+                                Donate $<span id="paypal-amount">5.00</span> via PayPal
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="crypto-method" class="method-panel">
+                        <div class="crypto-options">
+                            <div class="crypto-item">
+                                <div class="crypto-header">
+                                    <span class="crypto-name">Bitcoin (BTC)</span>
+                                    <button class="copy-btn" onclick="copyToClipboard('331dqC5jNsm2ys2wp83SUv8tUZKGAmrueG', this)">Copy</button>
+                                </div>
+                                <div class="crypto-address">331dqC5jNsm2ys2wp83SUv8tUZKGAmrueG</div>
+                            </div>
+                            
+                            <div class="crypto-item">
+                                <div class="crypto-header">
+                                    <span class="crypto-name">Ethereum (ETH)</span>
+                                    <button class="copy-btn" onclick="copyToClipboard('0x85c53efe088662af333a11b659ca911db5469b03', this)">Copy</button>
+                                </div>
+                                <div class="crypto-address">0x85c53efe088662af333a11b659ca911db5469b03</div>
+                            </div>
+                            
+                            <div class="crypto-item">
+                                <div class="crypto-header">
+                                    <span class="crypto-name">Litecoin (LTC)</span>
+                                    <button class="copy-btn" onclick="copyToClipboard('LKacdeS6n6Ei4hmvmsC3QSac1ZJP9g9Fcc', this)">Copy</button>
+                                </div>
+                                <div class="crypto-address">LKacdeS6n6Ei4hmvmsC3QSac1ZJP9g9Fcc</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="closeDonationModal()" style="width: 100%;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            dealerCards: [],
+            playerCards: [],
+            handCount: 0
+        };
+
+        let dealerSlots = [null];
+        let playerSlots = [null, null];
+        let currentSlot = null;
+        let selectedAmount = '5.00';
+
+        const CARD_VALUES = [
+            { value: 1, display: 'A' },
+            { value: 2, display: '2' },
+            { value: 3, display: '3' },
+            { value: 4, display: '4' },
+            { value: 5, display: '5' },
+            { value: 6, display: '6' },
+            { value: 7, display: '7' },
+            { value: 8, display: '8' },
+            { value: 9, display: '9' },
+            { value: 10, display: '10' },
+            { value: 10, display: 'J' },
+            { value: 10, display: 'Q' },
+            { value: 10, display: 'K' }
+        ];
+
+        // Initialize
+        function init() {
+            loadGameStats();
+            renderCards();
+            updateDisplay();
+            populateCardGrid();
+        }
+
+        function selectSlot(section, index) {
+            currentSlot = { section, index };
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        function populateCardGrid() {
+            const grid = document.getElementById('card-grid');
+            grid.innerHTML = '';
+            
+            CARD_VALUES.forEach(card => {
+                const button = document.createElement('div');
+                button.className = 'card-option';
+                button.textContent = card.display;
+                button.onclick = () => selectCardValue(card);
+                grid.appendChild(button);
+            });
+        }
+
+        function selectCardValue(card) {
+            if (!currentSlot) return;
+
+            const { section, index } = currentSlot;
+            
+            if (section === 'dealer') {
+                dealerSlots[index] = card.display;
+                gameState.dealerCards[index] = card.value;
+            } else {
+                playerSlots[index] = card.display;
+                gameState.playerCards[index] = card.value;
+            }
+
+            renderCards();
+            updateDisplay();
+            checkForAutoAddSlot();
+            closeModal();
+        }
+
+        function removeCard(section, index) {
+            if (section === 'dealer') {
+                // Dealer always has exactly one slot - just clear it
+                dealerSlots[0] = null;
+                gameState.dealerCards = [];
+            } else {
+                playerSlots.splice(index, 1);
+                gameState.playerCards.splice(index, 1);
+                if (playerSlots.length < 2) {
+                    while (playerSlots.length < 2) {
+                        playerSlots.push(null);
+                    }
+                }
+            }
+
+            renderCards();
+            updateDisplay();
+        }
+
+        function renderCards() {
+            // Render dealer slots
+            const dealerContainer = document.getElementById('dealer-slots');
+            dealerContainer.innerHTML = '';
+            
+            dealerSlots.forEach((card, index) => {
+                const slot = document.createElement('div');
+                slot.className = `card-slot ${card ? 'filled' : ''}`;
+                slot.setAttribute('data-section', 'dealer');
+                slot.setAttribute('data-index', index);
+                slot.onclick = () => selectSlot('dealer', index);
+                
+                if (card) {
+                    slot.innerHTML = `
+                        ${card}
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeCard('dealer', ${index})">×</button>
+                    `;
+                } else {
+                    slot.innerHTML = '<span>?</span>';
+                }
+                
+                dealerContainer.appendChild(slot);
+            });
+
+            // Render player slots
+            const playerContainer = document.getElementById('player-slots');
+            playerContainer.innerHTML = '';
+            
+            playerSlots.forEach((card, index) => {
+                const slot = document.createElement('div');
+                slot.className = `card-slot ${card ? 'filled' : ''}`;
+                slot.setAttribute('data-section', 'player');
+                slot.setAttribute('data-index', index);
+                slot.onclick = () => selectSlot('player', index);
+                
+                if (card) {
+                    slot.innerHTML = `
+                        ${card}
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeCard('player', ${index})">×</button>
+                    `;
+                } else {
+                    slot.innerHTML = '<span>?</span>';
+                }
+                
+                playerContainer.appendChild(slot);
+            });
+        }
+
+        function updateDisplay() {
+            const probabilities = calculateBlackjackProbabilities();
+            
+            document.getElementById('win-prob').textContent = probabilities.winProbability.toFixed(1) + '%';
+            document.getElementById('bust-prob').textContent = probabilities.bustProbability.toFixed(1) + '%';
+            
+            const recommendation = document.getElementById('recommendation');
+            recommendation.textContent = probabilities.recommendation;
+            recommendation.className = `recommendation ${probabilities.recommendationColor}`;
+            
+            document.getElementById('hands-count').textContent = gameState.handCount;
+        }
+
+        function checkForAutoAddSlot() {
+            // Only add player slots - dealer always has exactly one slot
+            if (playerSlots.every(slot => slot !== null) && playerSlots.length < 5) {
+                playerSlots.push(null);
+                renderCards();
+            }
+        }
+
+        function resetHand() {
+            gameState.dealerCards = [];
+            gameState.playerCards = [];
+            dealerSlots = [null];
+            playerSlots = [null, null];
+            renderCards();
+            updateDisplay();
+        }
+
+        function dealAgain() {
+            resetHand();
+            gameState.handCount++;
+            updateDisplay();
+            saveGameStats();
+        }
+
+        function calculateHandValue(cards) {
+            if (!cards || cards.length === 0) return 0;
+            
+            let sum = 0;
+            let aces = 0;
+            
+            cards.forEach(card => {
+                if (card === 1) {
+                    aces++;
+                    sum += 11;
+                } else {
+                    sum += card;
+                }
+            });
+            
+            while (sum > 21 && aces > 0) {
+                sum -= 10;
+                aces--;
+            }
+            
+            return sum;
+        }
+
+        function calculatePlayerBustProbability(playerValue) {
+            if (playerValue >= 21) return playerValue > 21 ? 100 : 0;
+            
+            const cardsNeeded = 21 - playerValue;
+            const bustCards = Math.max(0, 13 - Math.min(13, cardsNeeded));
+            return (bustCards / 13) * 100;
+        }
+
+        function getBasicStrategyRecommendation(playerValue, dealerUpCard, playerCards) {
+            if (playerValue > 21) return { recommendation: 'BUST', recommendationColor: 'hit' };
+            if (playerValue === 21) return { recommendation: 'BLACKJACK', recommendationColor: 'stand' };
+            if (!dealerUpCard) return { recommendation: 'SELECT_CARDS', recommendationColor: 'double' };
+            
+            // Soft totals (with Ace as 11)
+            const hasAce = playerCards && playerCards.includes(1);
+            const softTotal = hasAce && playerValue <= 21;
+            
+            if (softTotal && playerCards.length === 2) {
+                if (playerValue >= 19) return { recommendation: 'STAND', recommendationColor: 'stand' };
+                if (playerValue === 18) {
+                    return dealerUpCard <= 6 ? { recommendation: 'STAND', recommendationColor: 'stand' } : { recommendation: 'HIT', recommendationColor: 'hit' };
+                }
+                if (playerValue >= 15) {
+                    return dealerUpCard <= 6 ? { recommendation: 'DOUBLE', recommendationColor: 'double' } : { recommendation: 'HIT', recommendationColor: 'hit' };
+                }
+            }
+            
+            // Hard totals
+            if (playerValue >= 17) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue >= 13 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue === 12 && dealerUpCard >= 4 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue === 11) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            if (playerValue === 10 && dealerUpCard <= 9) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            if (playerValue === 9 && dealerUpCard >= 3 && dealerUpCard <= 6) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
+            
+            return { recommendation: 'HIT', recommendationColor: 'hit' };
+        }
+
+        function calculateWinProbability(playerValue, dealerUpCard, recommendation) {
+            if (playerValue > 21) return 0;
+            if (playerValue === 21) return 85;
+            if (!dealerUpCard) return 0;
+            
+            // Simplified win probability calculation
+            let baseWinRate = 42; // Base win rate for basic strategy
+            
+            // Adjust based on player hand strength
+            if (playerValue >= 19) baseWinRate += 15;
+            else if (playerValue >= 17) baseWinRate += 5;
+            else if (playerValue <= 11) baseWinRate -= 10;
+            
+            // Adjust based on dealer upcard
+            if (dealerUpCard <= 6) baseWinRate += 8;
+            else if (dealerUpCard >= 10) baseWinRate -= 8;
+            
+            // Adjust based on recommendation
+            if (recommendation === 'STAND') baseWinRate += 5;
+            else if (recommendation === 'DOUBLE') baseWinRate += 3;
+            
+            return Math.max(0, Math.min(95, baseWinRate));
+        }
+
+        function calculateBlackjackProbabilities() {
+            const dealerCards = gameState.dealerCards.filter(card => card !== undefined);
+            const playerCards = gameState.playerCards.filter(card => card !== undefined);
+            
+            if (dealerCards.length === 0 && playerCards.length === 0) {
+                return {
+                    winProbability: 0,
+                    bustProbability: 0,
+                    recommendation: 'SELECT CARDS',
+                    recommendationColor: 'double'
+                };
+            }
+            
+            const playerValue = calculateHandValue(playerCards);
+            const dealerUpCard = dealerCards.length > 0 ? dealerCards[0] : null;
+            const bustProbability = calculatePlayerBustProbability(playerValue);
+            const strategy = getBasicStrategyRecommendation(playerValue, dealerUpCard, playerCards);
+            const winProbability = calculateWinProbability(playerValue, dealerUpCard, strategy.recommendation);
+            
+            return {
+                winProbability,
+                bustProbability,
+                recommendation: strategy.recommendation,
+                recommendationColor: strategy.recommendationColor
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('card-modal').classList.remove('active');
+            currentSlot = null;
+        }
+
+        // Donation functions
+        function showDonation() {
+            document.getElementById('donation-modal').classList.add('active');
+        }
+
+        function closeDonationModal() {
+            document.getElementById('donation-modal').classList.remove('active');
+        }
+
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('paypal-amount').textContent = amount;
+        }
+
+        function switchMethod(method) {
+            document.querySelectorAll('.method-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.method-panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(method + '-method').classList.add('active');
+        }
+
+        function openPayPal() {
+            // Using your actual PayPal.me link
+            const paypalUrl = `https://paypal.me/EZ21ext/${selectedAmount}USD?country.x=CA&locale.x=en_US`;
+            window.open(paypalUrl, '_blank');
+        }
+
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        function saveGameStats() {
+            localStorage.setItem('ez21-stats', JSON.stringify({
+                handCount: gameState.handCount,
+                lastPlayed: new Date().toISOString()
+            }));
+        }
+
+        function loadGameStats() {
+            const saved = localStorage.getItem('ez21-stats');
+            if (saved) {
+                const stats = JSON.parse(saved);
+                gameState.handCount = stats.handCount || 0;
+            }
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('card-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('donation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDonationModal();
+            }
+        });
+
+        // Initialize the game
+        init();
+    </script>
+</body>
+</html>

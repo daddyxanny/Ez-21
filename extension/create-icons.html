@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <canvas id="canvas16" width="16" height="16"></canvas>
+    <canvas id="canvas48" width="48" height="48"></canvas>
+    <canvas id="canvas128" width="128" height="128"></canvas>
+    
+    <script>
+        function createIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Cards
+            const cardWidth = size * 0.25;
+            const cardHeight = size * 0.4;
+            const cardY = size * 0.1;
+            
+            // First card (Ace) - green
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(size * 0.1, cardY, cardWidth, cardHeight);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(size * 0.1, cardY, cardWidth, cardHeight);
+            
+            // Second card (King) - green
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(size * 0.4, cardY, cardWidth, cardHeight);
+            ctx.strokeRect(size * 0.4, cardY, cardWidth, cardHeight);
+            
+            // Third card (dealer) - red
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(size * 0.7, cardY, cardWidth, cardHeight);
+            ctx.strokeRect(size * 0.7, cardY, cardWidth, cardHeight);
+            
+            // "21" text
+            ctx.fillStyle = '#4ade80';
+            ctx.font = `bold ${size * 0.25}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('21', size * 0.5, size * 0.8);
+        }
+        
+        createIcon(document.getElementById('canvas16'), 16);
+        createIcon(document.getElementById('canvas48'), 48);
+        createIcon(document.getElementById('canvas128'), 128);
+        
+        // Download function
+        function downloadIcon(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Auto-download all icons
+        setTimeout(() => {
+            downloadIcon(document.getElementById('canvas16'), 'icon16.png');
+            downloadIcon(document.getElementById('canvas48'), 'icon48.png');
+            downloadIcon(document.getElementById('canvas128'), 'icon128.png');
+        }, 100);
+    </script>
+</body>
+</html>

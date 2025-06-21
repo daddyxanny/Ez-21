@@ -432,7 +432,7 @@
             // Hard totals
             if (playerValue >= 17) return { recommendation: 'STAND', recommendationColor: 'stand' };
             if (playerValue >= 13 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
-            if (playerValue === 12 && dealerUpCard >= 4 && dealerUpCard <= 6) return { recommendation: 'STAND', recommendationColor: 'stand' };
+            if (playerValue === 12 && dealerUpCard >= 4 && dealerUpCard <= 6) return { recommendation: 'HIT', recommendationColor: 'HIT' };
             if (playerValue === 11) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
             if (playerValue === 10 && dealerUpCard <= 9) return { recommendation: 'DOUBLE', recommendationColor: 'double' };
             if (playerValue === 9 && dealerUpCard >= 3 && dealerUpCard <= 6) return { recommendation: 'DOUBLE', recommendationColor: 'double' };

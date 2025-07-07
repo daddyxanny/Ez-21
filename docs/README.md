@@ -4,7 +4,7 @@ This is the static version of the EZ 21 Blackjack Strategy Calculator, optimized
 
 ## Live Demo
 
-Visit the live application: [https://yourusername.github.io/ez21/](https://yourusername.github.io/ez21/)
+Visit the live application: [EZ21.org)
 
 ## Features
 
